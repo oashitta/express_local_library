@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1= title
+
+  ul
+    each genre in genre_list
+      li
+        a(href=genre.url) #{genre.name}
+      
+    else
+      li There are no genres.
+
+
+
+//- The template to be rendered should be passed the variables title ('Genre List') and genre_list (the list of genres returned from your Genre.find() callback).
