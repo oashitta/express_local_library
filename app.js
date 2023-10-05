@@ -8,7 +8,11 @@ const logger = require('morgan');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const catalogRouter = require('./routes/catalog'); //Import routes for "catalog" area of site
+const compression = require('compression');
+// Helmet is a middleware package that can set appropriate HTTP headers that help protect your app from well-known web vulnerabilities
+const helmet = require('helmet');
 
+// create the Express application object.
 const app = express();
 
 // Setup MongoDb Connection - this code creates the connection to the database and reports any error to the console.
@@ -23,6 +27,7 @@ mongoose.set('strictQuery', false);
 // const dev_db_url =
 //   'mongodb+srv://admin:locallibrary12@cluster0.wmoolvc.mongodb.net/local_library?retryWrites=true&w=majority';
 // const mongoDB = process.env.MONGODB_URI || dev_db_url;
+
 const mongoDB = process.env.MONGODB_URI;
 
 // Wait for database to connect, logging an error if there is a problem
@@ -39,6 +44,16 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// Note: For a high-traffic website in production you wouldn't use this compression middleware. Instead, you would use a reverse proxy like Nginx.
+app.use(compression()); // Compress all routes
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      'script-src': ["'self'", 'code.jquery.com', 'cdn.jsdelivr.net'],
+    },
+  })
+);
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
